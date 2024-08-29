@@ -58,6 +58,7 @@ function passThroughRequest (mockAdapter, resolve, reject, config) {
 
 function handleRequest(mockAdapter, resolve, reject, config) {
   var url = config.url || "";
+  console.log("config is ", JSON.stringify(config));
   // TODO we're not hitting this `if` in any of the tests, investigate
   if (
     config.baseURL &&
@@ -65,9 +66,20 @@ function handleRequest(mockAdapter, resolve, reject, config) {
   ) {
     url = url.slice(config.baseURL.length);
   }
+  console.log("url is ", url);
 
   delete config.adapter;
   mockAdapter.history[config.method].push(config);
+
+  console.log("Searching for handler with the following parameters:");
+  console.log("Method:", config.method);
+  console.log("URL:", url);
+  console.log("Data:", config.data);
+  console.log("Params:", config.params);
+  console.log("Headers:", (config.headers && config.headers.constructor.name === 'AxiosHeaders')
+    ? Object.assign({}, config.headers.toJSON())
+    : config.headers);
+  console.log("Base URL:", config.baseURL);
 
   var handler = utils.findHandler(
     mockAdapter.handlers,
@@ -80,6 +92,11 @@ function handleRequest(mockAdapter, resolve, reject, config) {
       : config.headers,
     config.baseURL
   );
+
+  console.log("Found handler:", handler ? "Yes" : "No");
+  if (handler) {
+    console.log("Handler details:", JSON.stringify(handler, null, 2));
+  }
 
   if (handler) {
     if (handler[6] === true) {
