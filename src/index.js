@@ -46,24 +46,44 @@ function resetHistory() {
 }
 
 function MockAdapter(axiosInstance, options) {
+  console.log('Initializing MockAdapter');
   reset.call(this);
 
   if (axiosInstance) {
+    console.log('Axios instance provided');
     this.axiosInstance = axiosInstance;
+    console.log('Axios instance set:', this.axiosInstance);
+
     // Clone the axios instance to remove interceptors
     // this is used for the passThrough mode with axios > 1.2
-    this.axiosInstanceWithoutInterceptors = axiosInstance.create
-      ? axiosInstance.create()
-      : undefined;
+    if (axiosInstance.create) {
+      console.log('Creating clone of axios instance without interceptors');
+      this.axiosInstanceWithoutInterceptors = axiosInstance.create();
+    } else {
+      console.log('Unable to create clone of axios instance');
+      this.axiosInstanceWithoutInterceptors = undefined;
+    }
 
+    console.log('Storing original adapter');
     this.originalAdapter = axiosInstance.defaults.adapter;
+
+    console.log('Setting delay response');
     this.delayResponse =
       options && options.delayResponse > 0 ? options.delayResponse : null;
+    console.log('Delay response set to:', this.delayResponse);
+
+    console.log('Setting onNoMatch option');
     this.onNoMatch = (options && options.onNoMatch) || null;
+    console.log('onNoMatch set to:', this.onNoMatch);
+
+    console.log('Replacing axios adapter with mock adapter');
     axiosInstance.defaults.adapter = this.adapter.call(this);
+    console.log('Mock adapter set successfully');
   } else {
+    console.error('No axios instance provided');
     throw new Error("Please provide an instance of axios to mock");
   }
+  console.log('MockAdapter initialization complete');
 }
 
 MockAdapter.prototype.adapter = adapter;
