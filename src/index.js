@@ -17,7 +17,9 @@ var VERBS = [
 ];
 
 function adapter() {
+  console.log(`function adapter()`);
   return function (config) {
+    console.log(`calling adapter with config ${JSON.stringify(config)}`);
     var mockAdapter = this;
     return new Promise(function (resolve, reject) {
       handleRequest(mockAdapter, resolve, reject, config);
